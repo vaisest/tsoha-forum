@@ -1,0 +1,53 @@
+{% from 'bootstrap5/nav.html' import render_nav_item %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    {% block head %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {% block styles %}
+    <!-- Bootstrap CSS -->
+    {{ bootstrap.load_css() }}
+    {% endblock %}
+
+    <title>Tsohit</title>
+    {% endblock %}
+</head>
+
+<!-- <body class="text-bg-dark"> -->
+
+<body>
+    <nav class="navbar navbar-dark navbar-expand-lg bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand">Tsohit</a>
+            <div class="navbar-nav me-auto mb-lg-0">
+                {{render_nav_item("main.index", "Home")}}
+                {{render_nav_item("main.submit", "New post")}}
+            </div>
+            <div class="d-flex align-items-center">
+                <a class="text-light me-3" href="/login">Login</a>
+                <button class="btn btn-outline-success">Register</button>
+            </div>
+        </div>
+    </nav>
+    <!-- Your page content -->
+    <div class="row">
+        <div class="col">
+            {% block content %}{% endblock %}
+        </div>
+        <div class="bg-secondary min-vh-100" style="flex: 0 0 250px;">
+            <p>todo register</p>
+        </div>
+    </div>
+
+
+    {% block scripts %}
+    <!-- Optional JavaScript -->
+    {{ bootstrap.load_js() }}
+    {% endblock %}
+</body>
+
+</html>

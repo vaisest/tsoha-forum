@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_field %}
+
+{% block title %}Tsohit{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h3>Submit a new post</h3>
+    <div class="mw-50">
+        <form method="post" class="w-50">
+            {{ form.csrf_token() }}
+            {{ render_field(form.title) }}
+            {{ render_field(form.body, style="height: 90px") }}
+            <div class="d-flex justify-content-between align-items-center">
+                <div>Please don't post anything crazy.</div>
+                <button type="submit" class="btn btn-secondary rounded-0 border border-2">Submit</button>
+            </div>
+    </div>
+    </form>
+</div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Tsohit{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h1>Tsohit</h1>
+    <p>Messages:</p>
+    <ul>
+        {% for post in posts %}
+        <li>{{ post[0] }} {{ post[1] }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
