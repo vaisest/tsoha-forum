@@ -29,7 +29,7 @@ FLASK_ENV=development flask run # debug versio
 ## Kehitys
 
 Tiedostossa `requirements/dev.txt` on muutamia tämän sovelluksen kehittämiseen käytettyjä työkaluja. Kaikki projektin koodi on formatoitu Black-työkalulla, mitä voidaan käyttää komennolla `black --line-length 95 app`.  
-Lisätarkastukseen voidaan käyttä Flake8-komentoa seuraavasti: `flake8 --max-line-length 95 app`
+Lisätarkastukseen voidaan käyttä Flake8-komentoa seuraavasti: `flake8 --max-line-length 95 app`.
 
 ## Sovelluksen toimintoja
 

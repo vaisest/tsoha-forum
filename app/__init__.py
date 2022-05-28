@@ -1,5 +1,5 @@
 import click
-from config import Config
+from app.config import Config
 from flask import Flask, current_app
 from flask.cli import with_appcontext
 from flask_bootstrap import Bootstrap5
