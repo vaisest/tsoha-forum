@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, render_template
-from flask_login import login_required
+from flask_login import current_user, login_required
 from .. import db
 from ..main.forms import SubmitPostForm
 from sqlalchemy import text
@@ -29,8 +29,10 @@ def submit():
         title = form.title.data
         body = form.body.data
 
-        sql = text("INSERT INTO posts (title, body) VALUES (:title, :body)")
-        db.session.execute(sql, {"title": title, "body": body})
+        sql = text(
+            "INSERT INTO posts (title, body, author_id) VALUES (:title, :body, :author_id)"
+        )
+        db.session.execute(sql, {"title": title, "body": body, "author_id": current_user.id})
         db.session.commit()
 
         return redirect("/")
