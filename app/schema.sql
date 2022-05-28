@@ -10,7 +10,7 @@ CREATE TABLE accounts (
 CREATE TABLE posts (
   id SERIAL PRIMARY KEY,
   author_id INTEGER REFERENCES accounts (id),
---   created TIMESTAMP NOT NULL DEFAULT NOW(),
+  creation_date TIMESTAMP NOT NULL DEFAULT (NOW() AT TIME ZONE 'utc'),
   title VARCHAR(300) NOT NULL,
   body TEXT NOT NULL
   );

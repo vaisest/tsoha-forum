@@ -6,10 +6,16 @@
 <div class="container mt-3">
     <h1>Tsohit</h1>
     <p>Messages:</p>
-    <ul>
-        {% for post in posts %}
-        <li>{{ post[0] }} {{ post[1] }}</li>
-        {% endfor %}
-    </ul>
+    <!-- <div class="container ps-0"> -->
+    {% for post in posts %}
+    <div class="d-flex">
+        <div class="border bg-secondary px-2 pt-1 rounded mw-75">
+            <a class="text-primary mb-0" style="text-decoration: none;">{{ post[0] }}</a>
+            <p class="mb-0"><small>submitted by {{ post[2] }} {{ post[3] }}</small></p>
+            <p class="mb-1">{{post[1]}}</p>
+        </div>
+    </div>
+    {% endfor %}
+    <!-- </div> -->
 </div>
 {% endblock %}

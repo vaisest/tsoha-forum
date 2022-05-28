@@ -47,8 +47,15 @@ def init_db():
         db.session.commit()
     click.echo("Initialized the database.")
     # sample data for dev
-    sql = """
-    INSERT INTO posts (title, body) VALUES ('Test post please ignore', 'Hello I''m just testing this plz ignore');
+    account_sql = """
+    INSERT INTO accounts (username, password_hash) VALUES ('asd', 'pbkdf2:sha256:260000$VOOHNytYeLiKZGBV$e24420980f0fd6a2392a4d82f245bc268c59
+ca1858b9c7189199d7ccd58b8d75');
     """
-    db.session.execute(sql)
+    db.session.execute(account_sql)
+
+    posts_sql = """
+    INSERT INTO posts (author_id, title, body) VALUES (1, 'Test post please ignore', 'Hello I''m just testing this plz ignore');
+    """
+    db.session.execute(posts_sql)
+
     db.session.commit()

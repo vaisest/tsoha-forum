@@ -4,14 +4,18 @@ from app import db
 from app.main.forms import SubmitPostForm
 from sqlalchemy import text
 
+from app.util import relative_date_format
+
 main_blueprint = Blueprint("main", __name__)
 
 
 @main_blueprint.route("/")
 def index():
-    sql = text("SELECT * FROM posts;")
+    sql = text(
+        "SELECT title, body, username, creation_date FROM posts JOIN accounts ON posts.author_id = accounts.id"
+    )
     res = db.session.execute(sql).all()
-    posts = [row[1:] for row in res]
+    posts = [(row[0], row[1], row[2], relative_date_format(row[3])) for row in res]
     print(f"{posts=}")
 
     return render_template("index.html", posts=posts)
