@@ -2,25 +2,36 @@ import click
 from config import Config
 from flask import Flask, current_app
 from flask.cli import with_appcontext
-
 from flask_bootstrap import Bootstrap5
+from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
+bootstrap = Bootstrap5()
+
 db = SQLAlchemy()
+
+login_manager = LoginManager()
+login_manager.login_view = "auth.login"
 
 
 def create_app():
     app = Flask(__name__)
-    Bootstrap5(app)
 
     app.config.from_object(Config)
+
     db.init_app(app)
+    bootstrap.init_app(app)
+    login_manager.init_app(app)
 
     app.cli.add_command(init_db)
 
     from .main.routes import main_blueprint
 
     app.register_blueprint(main_blueprint)
+
+    from .auth.routes import auth_blueprint
+
+    app.register_blueprint(auth_blueprint)
 
     return app
 

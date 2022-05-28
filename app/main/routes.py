@@ -1,4 +1,5 @@
 from flask import Blueprint, redirect, render_template
+from flask_login import login_required
 from app import db
 from app.main.forms import SubmitPostForm
 from sqlalchemy import text
@@ -17,6 +18,7 @@ def index():
 
 
 @main_blueprint.route("/submit", methods=["GET", "POST"])
+@login_required
 def submit():
     form = SubmitPostForm()
     if form.validate_on_submit():

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_field %}
+
+{% block title %}Tsohit - Login{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h3>Register to Tsohit</h3>
+    <div class="d-flex">
+        <form method="post">
+            {{ form.csrf_token() }}
+
+            {{ render_field(form.username) }}
+            {{ render_field(form.password) }}
+            {{ render_field(form.password_confirmation) }}
+
+            <div class="d-flex justify-content-end align-items-center">
+                <button type="submit" class="btn btn-secondary rounded-0 border border-2 ms-5">Login</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
