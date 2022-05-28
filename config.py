@@ -10,7 +10,9 @@ class Config:
     # FLASK_APP = environ.get("FLASK_APP")
     FLASK_ENV = environ.get("FLASK_ENV")
 
-    SQLALCHEMY_DATABASE_URI = environ.get("SQLALCHEMY_DATABASE_URI")
+    SQLALCHEMY_DATABASE_URI = environ.get("SQLALCHEMY_DATABASE_URI") or environ.get(
+        "DATABASE_URL"
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # debug:
     # SQLALCHEMY_ECHO = True
