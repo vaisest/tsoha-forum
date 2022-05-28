@@ -26,7 +26,9 @@ def login():
         remember_me = form.remember_me.data
 
         user = User.get_by_username(username)
+
         if not user or not check_password_hash(user.password_hash, password):
+            flash("Incorrect username or password", "error")
             return redirect(url_for("auth.login"))
 
         login_user(user, remember=remember_me)
