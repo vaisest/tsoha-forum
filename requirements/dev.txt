@@ -1,4 +1,2 @@
 -r base.txt
 black==22.3.0
-# mypy==0.950
-# types-flask-sqlalchemy==2.5.2

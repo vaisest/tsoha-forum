@@ -31,7 +31,6 @@ def login():
 
         login_user(user, remember=remember_me)
         flash("You were succesfully logged in", "success")
-        print(user, username, password, remember_me)
         return redirect(url_for("main.index"))
     return render_template("login.html", form=form)
 

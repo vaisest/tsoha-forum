@@ -5,6 +5,19 @@
 Tässä repositoriossa on [Tsoha-kurssin](https://hy-tsoha.github.io/materiaali/) projekti, jonka ideana on Reddit-tyylinen keskustelupalsta.  
 Sovellus toteutetaan Flask:lla, PostgreSQL:lla ja se tulee olemaan saatavilla Herokussa.
 
+## Sovelluksen käyttö
+
+Sovellus vaatii jonkin verran konfiguraatiota ennen käyttöä. Käyttöön vaaditaan PostgreSQL palvelin, jonka osoite täytyy lisätä `.env` tiedostoon tai ympäristömuuttujaan `SQLALCHEMY_DATABASE_URI`. Samoin täytyy myös tehdä muuttujalle `SECRET_KEY`, joka täytyy asetta joksikin uniikiksi arvoksi.
+
+Sovellusta voidaan käyttä paikalliesti Linuxilla seuraavasti:
+
+```bash
+python -m venv venv # uusi virtuaaliympäristö
+source venv/bin/activate # luodun ympäristön aktivointi
+pip install -r requirements.txt # riippuvuuksien asennus
+FLASK_ENV=development flask run
+```
+
 ## Sovelluksen toimintoja
 
 - Käyttäjiä voi lisätä ja sovelluksessa on tavallinen kirjautumistoiminto. Ylläpitällä on oma käyttäjä, jolla on erikoisoikeuksia.
