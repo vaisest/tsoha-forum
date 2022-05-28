@@ -15,8 +15,10 @@ Sovellusta voidaan käyttä paikalliesti Linuxilla seuraavasti:
 python -m venv venv # uusi virtuaaliympäristö
 source venv/bin/activate # luodun ympäristön aktivointi
 pip install -r requirements.txt # riippuvuuksien asennus
-FLASK_ENV=development flask run
+FLASK_ENV=development flask run # debug versio, julkisessa käytössä on gunicorn
 ```
+
+
 
 ## Sovelluksen toimintoja
 

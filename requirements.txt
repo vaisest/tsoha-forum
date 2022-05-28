@@ -1,1 +1,2 @@
-requirements/prod.txt
+-r requirements/base.txt
+gunicorn==20.1.0
