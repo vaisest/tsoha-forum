@@ -48,13 +48,16 @@ def init_db():
     click.echo("Initialized the database.")
     # sample data for dev
     account_sql = """
-    INSERT INTO accounts (username, password_hash) VALUES ('asd', 'pbkdf2:sha256:260000$VOOHNytYeLiKZGBV$e24420980f0fd6a2392a4d82f245bc268c59
-ca1858b9c7189199d7ccd58b8d75');
+    INSERT INTO accounts (username, password_hash)
+    VALUES
+        ('asd', 'pbkdf2:sha256:260000$VOOHNytYeLiKZGBV$e24420980f0fd6a2392a4d82f245bc268c59ca1858b9c7189199d7ccd58b8d75');
     """
     db.session.execute(account_sql)
 
     posts_sql = """
-    INSERT INTO posts (author_id, title, body) VALUES (1, 'Test post please ignore', 'Hello I''m just testing this plz ignore');
+    INSERT INTO posts (author_id, title, body)
+    VALUES
+        (1, 'Test post please ignore', 'Hello I''m just testing this plz ignore');
     """
     db.session.execute(posts_sql)
 
