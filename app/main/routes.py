@@ -1,7 +1,7 @@
 from flask import Blueprint, redirect, render_template
 from flask_login import login_required
-from app import db
-from app.main.forms import SubmitPostForm
+from .. import db
+from ..main.forms import SubmitPostForm
 from sqlalchemy import text
 
 from app.util import relative_date_format

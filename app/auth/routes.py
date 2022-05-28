@@ -1,6 +1,6 @@
-from app import db
-from app.auth.forms import LoginForm, RegisterForm
-from app.auth.manager import User
+from .. import db
+from ..auth.forms import LoginForm, RegisterForm
+from ..auth.manager import User
 from flask import Blueprint, flash, redirect, render_template, url_for
 from flask_login import current_user, login_user, logout_user
 from sqlalchemy.sql import text
