@@ -7,7 +7,7 @@ Sovellus toteutetaan Flask:lla, PostgreSQL:lla ja se tulee olemaan saatavilla He
 
 ## Sovelluksen käyttö
 
-Sovellus vaatii jonkin verran konfiguraatiota ennen käyttöä. Käyttöön vaaditaan PostgreSQL palvelin, jonka osoite täytyy lisätä `.env` tiedostoon tai ympäristömuuttujaan `SQLALCHEMY_DATABASE_URI`. Samoin täytyy myös tehdä muuttujalle `SECRET_KEY`, joka täytyy asetta joksikin uniikiksi arvoksi.
+Sovellus vaatii jonkin verran konfiguraatiota ennen käyttöä. Käyttöön vaaditaan PostgreSQL palvelin, jonka osoite täytyy lisätä `.env` tiedostoon tai ympäristömuuttujaan `SQLALCHEMY_DATABASE_URI`. Samoin täytyy myös tehdä muuttujalle `SECRET_KEY`, joka täytyy asettaa joksikin uniikiksi arvoksi.
 
 Sovellus on Herokussa osoitteessa [tsohit.herokuapp.com](https://tsohit.herokuapp.com).
 
