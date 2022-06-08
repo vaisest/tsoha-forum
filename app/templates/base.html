@@ -20,13 +20,14 @@
 <!-- <body class="text-bg-dark"> -->
 
 <body>
-    <nav class="navbar navbar-dark navbar-expand-lg bg-dark">
+    <nav class="navbar navbar-dark navbar-expand-lg bg-dark py-2">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">Tsohit</a>
             <div class="navbar-nav me-auto mb-lg-0">
                 {{render_nav_item("main.index", "Home")}}
                 {% if current_user.is_authenticated %}
                 {{render_nav_item("main.submit", "New post")}}
+                {{render_nav_item("main.create_sub", "New subtsohit")}}
                 {% endif %}
             </div>
             <div class="d-flex align-items-center">

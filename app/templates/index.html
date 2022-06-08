@@ -1,21 +1,46 @@
 {% extends "base.html" %}
+{% from 'bootstrap5/nav.html' import render_nav_item %}
 
 {% block title %}Tsohit{% endblock %}
 
 {% block content %}
-<div class="container mt-3">
-    <h1>Tsohit</h1>
-    <p>Messages:</p>
-    <!-- <div class="container ps-0"> -->
-    {% for post in posts %}
-    <div class="d-flex">
-        <div class="border bg-secondary px-2 pt-1 rounded mw-75">
-            <a class="text-primary mb-0" style="text-decoration: none;">{{ post[0] }}</a>
-            <p class="mb-0"><small>submitted by {{ post[2] }} {{ post[3] }}</small></p>
-            <p class="mb-1">{{post[1]}}</p>
+<div>
+    <nav class="navbar navbar-dark navbar-expand-lg bg-secondary py-0">
+        <div class="container-fluid p-0" style="padding-left: 12px !important; padding-right: 12px !important;">
+            <p class="my-auto p-0 m-0"><small>Subtsohits:</small></p>
+            <div class="navbar-nav me-auto mb-lg-0">
+                {% for other_sub in subs %}
+                <!-- taken from bootstrap-flask source because it doesn't allow you to change styles on navs -->
+                {% set active = True if request.endpoint and request.endpoint == endpoint else False %}
+                <a class="nav-item nav-link m-0 p-0 my-auto ms-1 {% if active %} active" aria-current="page{% endif %}"
+                    href="{{ url_for('main.sub_index', sub_name=other_sub.name) }}">
+                    <small>{{ other_sub.name }}</small>
+                </a>
+                {% endfor %}
+            </div>
         </div>
+    </nav>
+    <div class="container mt-3">
+
+        <h1>{% if sub %} {{ sub.title }} {% else %}Tsohit{% endif %}</h1>
+        <p>Posts:</p>
+        {% for post in posts %}
+        <div class="d-flex">
+            <div class="border bg-secondary px-2 pt-1 rounded mw-75 mb-2">
+                <a class="text-primary mb-0" style="text-decoration: none;">{{ post.title }}</a>
+                <p class="mb-0">
+                    <small>
+                        submitted by {{ post.username }} {{ post.relative_date }}
+                        {% if not sub %} to
+                        <a href="{{ url_for('main.sub_index', sub_name=post.sub_name) }}" class="text-primary">/t/{{
+                            post.sub_name }}</a>
+                        {% endif %}
+                    </small>
+                </p>
+                <p class="mb-1">{{post.body}}</p>
+            </div>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-    <!-- </div> -->
 </div>
 {% endblock %}

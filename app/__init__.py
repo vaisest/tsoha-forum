@@ -55,10 +55,17 @@ def init_db():
     """
     db.session.execute(account_sql)
 
-    posts_sql = """
-    INSERT INTO posts (author_id, title, body)
+    account_sql = """
+    INSERT INTO subtsohits (sub_name, sub_title, creator_id)
     VALUES
-        (1, 'Test post please ignore', 'Hello I''m just testing this plz ignore');
+        ('testsub', 'a testsub for... testing.', '1');
+    """
+    db.session.execute(account_sql)
+
+    posts_sql = """
+    INSERT INTO posts (author_id, title, body, parent_sub_id)
+    VALUES
+        (1, 'Test post please ignore', 'Hello I''m just testing this plz ignore', 1);
     """
     db.session.execute(posts_sql)
 

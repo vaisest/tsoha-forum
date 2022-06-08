@@ -13,14 +13,16 @@ class User(UserMixin):
     @staticmethod
     def get(user_id):
         print("a", user_id)
-        sql = text("SELECT id, username, password_hash FROM accounts WHERE id = :id LIMIT 1")
+        sql = text(
+            "SELECT account_id, username, password_hash FROM accounts WHERE account_id = :id LIMIT 1"
+        )
         result = db.session.execute(sql, {"id": user_id}).first()
         return None if not result else User(result[0], result[1], result[2])
 
     @staticmethod
     def get_by_username(username):
         sql = text(
-            "SELECT id, username, password_hash FROM accounts WHERE username = :username LIMIT 1"
+            "SELECT account_id, username, password_hash FROM accounts WHERE username = :username LIMIT 1"
         )
         result = db.session.execute(sql, {"username": username}).first()
         return None if not result else User(result[0], result[1], result[2])
