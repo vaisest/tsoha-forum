@@ -4,6 +4,7 @@ from datetime import datetime
 from sqlalchemy import text
 
 from . import db
+from .auth.manager import User
 from .util import relative_date_format
 
 
@@ -103,3 +104,55 @@ def create_sub_if_unique(name, title, creator_id):
     db.session.commit()
 
     return True
+
+
+def user_exists(username):
+    check_sql = text("SELECT EXISTS (SELECT 1 FROM accounts WHERE username = :username)")
+    exists = db.session.execute(check_sql, {"username": username}).first()[0]
+
+    return exists
+
+
+def create_user(username, password_hash):
+    sql = text(
+        """
+            INSERT INTO accounts (username, password_hash)
+            VALUES
+                (:username, :password_hash)
+            RETURNING account_id
+            """
+    )
+
+    result = db.session.execute(sql, {"username": username, "password_hash": password_hash})
+    new_id = result.first()[0]
+    db.session.commit()
+
+    return User(new_id, username, password_hash)
+
+
+def get_user_by_id(user_id):
+    sql = text(
+        "SELECT account_id, username, password_hash FROM accounts WHERE account_id = :id LIMIT 1"
+    )
+    result = db.session.execute(sql, {"id": user_id}).first()
+
+    if not result:
+        return None
+
+    user = User(result[0], result[1], result[2])
+
+    return user
+
+
+def get_user_by_username(username):
+    sql = text(
+        "SELECT account_id, username, password_hash FROM accounts WHERE username = :username LIMIT 1"
+    )
+    result = db.session.execute(sql, {"username": username}).first()
+
+    if not result:
+        return None
+
+    user = User(result[0], result[1], result[2])
+
+    return user
