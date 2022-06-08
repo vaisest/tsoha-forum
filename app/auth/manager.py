@@ -16,7 +16,7 @@ class User(UserMixin):
 
     @staticmethod
     def get_by_username(username):
-        return db_service.get_user_by_usernamename(username)
+        return db_service.get_user_by_username(username)
 
     def __str__(self):
         return f"User(Id={self.id}, username={self.username})"
