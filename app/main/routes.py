@@ -1,10 +1,11 @@
 from flask import Blueprint, redirect, render_template
 from flask_login import current_user, login_required
-from .. import db
-from ..main.forms import SubmitPostForm
 from sqlalchemy import text
 
 from app.util import relative_date_format
+
+from .. import db
+from ..main.forms import SubmitPostForm
 
 main_blueprint = Blueprint("main", __name__)
 

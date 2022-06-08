@@ -1,10 +1,11 @@
-from .. import db
-from ..auth.forms import LoginForm, RegisterForm
-from ..auth.manager import User
 from flask import Blueprint, flash, redirect, render_template, url_for
 from flask_login import current_user, login_user, logout_user
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
+
+from .. import db
+from ..auth.forms import LoginForm, RegisterForm
+from ..auth.manager import User
 
 auth_blueprint = Blueprint("auth", __name__)
 

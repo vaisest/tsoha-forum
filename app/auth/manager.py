@@ -1,6 +1,7 @@
 from flask_login import UserMixin
-from .. import db, login_manager
 from sqlalchemy.sql import text
+
+from .. import db, login_manager
 
 
 class User(UserMixin):
