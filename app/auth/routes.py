@@ -11,12 +11,16 @@ auth_blueprint = Blueprint("auth", __name__)
 
 @auth_blueprint.before_app_request
 def before_request():
+    """Redirects clients that are logged in to main.index, away from the auth blueprint."""
+
     if current_user.is_authenticated:
         redirect(url_for("main.index"))
 
 
 @auth_blueprint.route("/login", methods=["POST", "GET"])
 def login():
+    """Route that on GET shows the login form, and on POST handles logging the user in."""
+
     form = LoginForm()
 
     if form.validate_on_submit():
@@ -39,6 +43,8 @@ def login():
 
 @auth_blueprint.route("/register", methods=["POST", "GET"])
 def register():
+    """Route that on GET shows the login form, and on POST handles logging the user in."""
+
     form = RegisterForm()
     if form.validate_on_submit():
         username = form.username.data
@@ -65,6 +71,8 @@ def register():
 
 @auth_blueprint.route("/logout")
 def logout():
+    """Simple route that logs the current user out and redirects them to main.index."""
+
     logout_user()
     flash("You have been logged out", "info")
     return redirect(url_for("main.index"))

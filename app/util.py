@@ -2,6 +2,12 @@ from datetime import datetime
 
 
 def relative_date_format(date):
+    """
+    Formats a datetime.datetime object to a relative date.
+    For example: just now, 3 seconds ago, 4 minutes ago,
+    5 hours ago, or 6 days ago.
+    """
+
     diff = datetime.utcnow() - date
     if diff.days == 1:
         return "1 day ago"

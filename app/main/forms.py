@@ -4,12 +4,24 @@ from wtforms.validators import DataRequired, Length, Regexp
 
 
 class SubmitPostForm(FlaskForm):
+    """
+    Flask-WTF form for the creation of a new submission.
+    Has a regular text field of up to 300 characters, an expandable body field,
+    and a selection field that has a list of all subs.
+    """
+
     title = StringField("Title", validators=[DataRequired(), Length(max=300)])
     body = TextAreaField("Body", validators=[DataRequired()])
     sub = SelectField("Subtsohit", validators=[DataRequired()])
 
 
 class CreateSubForm(FlaskForm):
+    """
+    Flask-WTF form for the creation of a new submission.
+    Has a text field for the name that only allows basic characters,
+    and a field for the title that is shown at the top of the page.
+    """
+
     name = StringField(
         "Name",
         validators=[

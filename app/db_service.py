@@ -1,3 +1,10 @@
+"""
+This file contains a sort of a service that contains the parts
+of the app that interact directly with the database.
+All of the project's SQL code (except for the schema) is
+located here. Currently this contains one big service,
+but as a TODO it could be split into several smaller services.
+"""
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -21,6 +28,11 @@ class Post:
 
 
 def get_posts(for_sub=None):
+    """
+    Gets all posts from DB, or only for a specific sub if kwarg for_sub is defined.
+    Returns data as Post instances.
+    """
+
     sql = text(
         """
         SELECT title, body, username, creation_date, sub_name FROM posts
@@ -40,6 +52,11 @@ def get_posts(for_sub=None):
 
 
 def insert_post(title, body, author_id, sub_id):
+    """
+    Inserts post into database, based on arguments title, body, author_id, sub_id.
+    Returns the id of the inserted post.
+    """
+
     sql = text(
         """
             INSERT INTO posts (title, body, author_id, parent_sub_id)
@@ -67,6 +84,11 @@ class Sub:
 
 
 def get_subs():
+    """
+    Gets all subs from DB.
+    Returns data as Sub instances.
+    """
+
     sql = text("SELECT sub_id, sub_name, sub_title FROM subtsohits")
     res = db.session.execute(sql).all()
 
@@ -76,6 +98,11 @@ def get_subs():
 
 
 def get_sub_by_name(name):
+    """
+    Gets a specific sub from DB.
+    Returns the item as a Sub instance, or None if it wasn't found.
+    """
+
     sql = text("SELECT sub_id, sub_name, sub_title FROM subtsohits WHERE sub_name = :name")
     res = db.session.execute(sql, {"name": name}).first()
 
@@ -88,6 +115,12 @@ def get_sub_by_name(name):
 
 
 def create_sub_if_unique(name, title, creator_id):
+    """
+    Inserts sub into database, based on arguments name, title, and creator_id
+    after checking that it is unique.
+    Returns True if it was added, and False if it wasn't.
+    """
+
     check_sql = text("SELECT EXISTS (SELECT 1 FROM subtsohits WHERE sub_name = :name)")
     exists = db.session.execute(check_sql, {"name": name}).first()[0]
 
@@ -107,6 +140,11 @@ def create_sub_if_unique(name, title, creator_id):
 
 
 def user_exists(username):
+    """
+    Queries the database for an username.
+    Returns True if the username exists, and False if it doesn't.
+    """
+
     check_sql = text("SELECT EXISTS (SELECT 1 FROM accounts WHERE username = :username)")
     exists = db.session.execute(check_sql, {"username": username}).first()[0]
 
@@ -114,6 +152,11 @@ def user_exists(username):
 
 
 def create_user(username, password_hash):
+    """
+    Inserts user into database, based on arguments usename and password_hash.
+    Returns the new user as a Flask-Login User class instance.
+    """
+
     sql = text(
         """
             INSERT INTO accounts (username, password_hash)
@@ -131,6 +174,11 @@ def create_user(username, password_hash):
 
 
 def get_user_by_id(user_id):
+    """
+    Gets a specific user from DB based on its id.
+    Returns the item as a Flask-Login User instance, or None if it wasn't found.
+    """
+
     sql = text(
         "SELECT account_id, username, password_hash FROM accounts WHERE account_id = :id LIMIT 1"
     )
@@ -145,6 +193,11 @@ def get_user_by_id(user_id):
 
 
 def get_user_by_username(username):
+    """
+    Gets a specific user from DB based on its username.
+    Returns the item as a Flask-Login User instance, or None if it wasn't found.
+    """
+
     sql = text(
         "SELECT account_id, username, password_hash FROM accounts WHERE username = :username LIMIT 1"
     )

@@ -5,6 +5,12 @@ from .. import db_service, login_manager
 
 
 class User(UserMixin):
+    """
+    Very basic user class for Flask-Login.
+    The required static method get and utility method get_by_username
+    are implemented by the db_service.
+    """
+
     def __init__(self, id, username, password_hash):
         self.id = id
         self.username = username
@@ -24,4 +30,5 @@ class User(UserMixin):
 
 @login_manager.user_loader
 def load_user(user_id):
+    """Callback for Flask-Login user loading."""
     return User.get(user_id)

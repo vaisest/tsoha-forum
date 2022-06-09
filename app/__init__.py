@@ -16,6 +16,13 @@ login_manager.login_view = "auth.login"
 
 
 def create_app():
+    """
+    Flask App factory function.
+    This function initialises the app config based on config.py,
+    then initializes the Flask plugins SQLAlchemy, Bootstrap-Flask, Flask-Login.
+    Then it adds the init_db click CLI command and imports the app blueprints.
+    """
+
     app = Flask(__name__)
 
     app.config.from_object(Config)
@@ -40,7 +47,11 @@ def create_app():
 @click.command("init-db")
 @with_appcontext
 def init_db():
-    """Initialize the database based on schema.sql."""
+    """
+    Initialize the database based on schema.sql, while inserting
+    some basic data into the database for development purposes.
+    """
+
     with current_app.open_resource("schema.sql") as f:
         sql = f.read().decode("UTF-8")
         print(sql)
@@ -65,7 +76,7 @@ def init_db():
     posts_sql = """
     INSERT INTO posts (author_id, title, body, parent_sub_id)
     VALUES
-        (1, 'Test post please ignore', 'Hello I''m just testing this plz ignore', 1);
+        (1, 'Test post please ignore', 'Hello I''m just testing this please ignore', 1);
     """
     db.session.execute(posts_sql)
 

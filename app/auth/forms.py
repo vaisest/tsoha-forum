@@ -4,6 +4,11 @@ from wtforms.validators import DataRequired, EqualTo, Length, Regexp
 
 
 class LoginForm(FlaskForm):
+    """
+    Flask-WTF form for the login form.
+    Has an username which only allows basic characters, and a password field.
+    """
+
     username = StringField(
         "Username",
         validators=[
@@ -20,6 +25,12 @@ class LoginForm(FlaskForm):
 
 
 class RegisterForm(FlaskForm):
+    """
+    Flask-WTF form for the login form.
+    Has an username which only allows basic characters, a password field,
+    and a password confirmation field that checks for equality.
+    """
+
     username = StringField(
         "Username",
         validators=[
