@@ -34,7 +34,7 @@ def login():
         login_user(user, remember=remember_me)
         flash("You were succesfully logged in", "success")
         return redirect(url_for("main.index"))
-    return render_template("login.html", form=form)
+    return render_template("auth/login.html", form=form)
 
 
 @auth_blueprint.route("/register", methods=["POST", "GET"])
@@ -60,7 +60,7 @@ def register():
         print(f"New user {user=}")
         flash("User succesfully created", "success")
         return redirect(url_for("main.index"))
-    return render_template("register.html", form=form)
+    return render_template("auth/register.html", form=form)
 
 
 @auth_blueprint.route("/logout")

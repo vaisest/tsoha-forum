@@ -17,7 +17,6 @@
     {% endblock %}
 </head>
 
-<!-- <body class="text-bg-dark"> -->
 
 <body>
     <nav class="navbar navbar-dark navbar-expand-lg bg-dark py-2">
@@ -40,39 +39,24 @@
             </div>
         </div>
     </nav>
-    <!-- Your page content -->
-    <div class="row">
+    <div class="row mx-0">
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-        <ul class=flashes>
-            {% for category, message in messages %}
-            {% if category == "info" %}
-            <li>
-                <div class="alert alert-info rounded-0" role="alert">{{ message }}</div>
-            </li>
-            {% elif category == "success" %}
-            <li>
-                <div class="alert alert-success rounded-0" role="alert">{{ message }}</div>
-            </li>
-            {% elif category == "error" %}
-            <li>
-                <div class="alert alert-danger rounded-0" role="alert">{{ message }}</div>
-            </li>
-            {% else %}
-            <li>
-                <div class="alert alert-secondary rounded-0" role="alert">{{ message }}</div>
-            </li>
-            {% endif %}
-            {% endfor %}
-        </ul>
+        {% for category, message in messages %}
+        <!-- dict for alert classes -->
+        {% set alert_map = {"info": "alert-info", "success": "alert-success", "error": "alert-danger"} %}
+        {% set alert_class = alert_map[category]|default("alert-secondary") %}
+        <!-- for loop makes a separate alert div for each alert -->
+        <div class="alert rounded-0 alert-dismissible ps-4 m-0 {{ alert_class }}" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close pe-5" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
         {% endif %}
         {% endwith %}
-        <div class="col">
+        <div class="col p-0">
             {% block content %}{% endblock %}
         </div>
-        <!-- <div class="bg-secondary min-vh-100" style="flex: 0 0 250px;">
-            <p>todo register</p>
-        </div> -->
     </div>
 
 

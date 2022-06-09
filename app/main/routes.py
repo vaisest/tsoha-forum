@@ -13,7 +13,7 @@ def index():
     subs = db_service.get_subs()
     print(f"{posts=}")
 
-    return render_template("index.html", posts=posts, subs=subs)
+    return render_template("main/index.html", posts=posts, subs=subs)
 
 
 @main_blueprint.route("/t/<sub_name>/")
@@ -28,7 +28,7 @@ def sub_index(sub_name):
 
     print(f"{posts=} in {sub=}")
 
-    return render_template("index.html", posts=posts, sub_name=sub.name, subs=subs)
+    return render_template("main/index.html", posts=posts, sub_name=sub.name, subs=subs)
 
 
 @main_blueprint.route("/submit", methods=["GET", "POST"])
@@ -47,7 +47,7 @@ def submit():
         db_service.insert_post(title, body, current_user.id, sub_id)
 
         return redirect("/")
-    return render_template("submit.html", form=form)
+    return render_template("main/submit.html", form=form)
 
 
 @main_blueprint.route("/subs/create", methods=["GET", "POST"])
@@ -65,4 +65,4 @@ def create_sub():
             return redirect(url_for("main.create_sub"))
 
         return redirect(url_for("main.sub_index", sub_name=name))
-    return render_template("create_sub.html", form=form)
+    return render_template("main/create_sub.html", form=form)
