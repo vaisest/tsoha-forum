@@ -19,12 +19,13 @@ from .util import relative_date_format
 class Post:
     """Dataclass that represents a Tsohit post."""
 
+    id: str
     title: str
     body: str
     username: str
     creation_date: datetime
     relative_date: str
-    sub_name: str
+    sub_name: str = None
 
 
 def get_posts(for_sub=None):
@@ -35,7 +36,7 @@ def get_posts(for_sub=None):
 
     sql = text(
         """
-        SELECT title, body, username, creation_date, sub_name FROM posts
+        SELECT post_id, title, body, username, creation_date, sub_name FROM posts
             JOIN accounts ON posts.author_id = accounts.account_id
             JOIN subtsohits ON posts.parent_sub_id = subtsohits.sub_id
                 AND (:for_sub IS NULL OR subtsohits.sub_name = :for_sub)
@@ -44,11 +45,43 @@ def get_posts(for_sub=None):
     res = db.session.execute(sql, {"for_sub": for_sub}).all()
 
     posts = [
-        Post(item[0], item[1], item[2], item[3], relative_date_format(item[3]), item[4])
+        Post(
+            item[0], item[1], item[2], item[3], item[4], relative_date_format(item[4]), item[5]
+        )
         for item in res
     ]
 
     return posts
+
+
+@dataclass
+class Comment:
+    """Dataclass that represents a comment."""
+
+    body: str
+    username: str
+    creation_date: datetime
+    relative_date: str
+
+
+def get_post_and_comments_by_id(post_id):
+    """
+    Gets a single post from the database based on a
+    post_id. Returns it as a Post instance.
+    """
+
+    sql = text(
+        """
+        SELECT post_id, title, body, username, creation_date FROM posts
+            JOIN accounts ON posts.author_id = accounts.account_id
+            WHERE posts.post_id = :post_id
+        """
+    )
+    res = db.session.execute(sql, {"post_id": post_id}).first()
+
+    post = Post(res[0], res[1], res[2], res[3], res[4], relative_date_format(res[4]))
+
+    return post
 
 
 def insert_post(title, body, author_id, sub_id):
@@ -99,7 +132,7 @@ def get_subs():
 
 def get_sub_by_name(name):
     """
-    Gets a specific sub from DB.
+    Gets a specific sub from DB based on name.
     Returns the item as a Sub instance, or None if it wasn't found.
     """
 

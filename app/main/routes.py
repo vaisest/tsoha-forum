@@ -9,6 +9,7 @@ main_blueprint = Blueprint("main", __name__)
 
 @main_blueprint.route("/")
 def index():
+    """Route for main view with posts from all subs."""
     posts = db_service.get_posts()
     subs = db_service.get_subs()
     print(f"{posts=}")
@@ -18,6 +19,7 @@ def index():
 
 @main_blueprint.route("/t/<sub_name>/")
 def sub_index(sub_name):
+    """Route for sub view where only posts from specificed sub are shown."""
     posts = db_service.get_posts(for_sub=sub_name)
     subs = db_service.get_subs()
     sub = next(sub for sub in subs if sub.name == sub_name)
@@ -28,12 +30,27 @@ def sub_index(sub_name):
 
     print(f"{posts=} in {sub=}")
 
-    return render_template("main/index.html", posts=posts, sub_name=sub.name, subs=subs)
+    return render_template("main/index.html", posts=posts, sub=sub, subs=subs)
+
+
+@main_blueprint.route("/t/<sub_name>/<post_id>")
+def single_post(sub_name, post_id):
+    """Route for single post view. Shows post and its comments."""
+    post = db_service.get_post_and_comments_by_id(post_id)
+    subs = db_service.get_subs()
+    sub = next(sub for sub in subs if sub.name == sub_name)
+
+    if not sub:
+        flash("Subtsohit does not exist", "error")
+        return redirect(url_for("main.index"))
+
+    return render_template("main/post.html", post=post, sub=sub, subs=subs)
 
 
 @main_blueprint.route("/submit", methods=["GET", "POST"])
 @login_required
 def submit():
+    """Route for showing both a post submission form and handling its POST."""
     form = SubmitPostForm()
 
     subs = db_service.get_subs()
@@ -53,6 +70,7 @@ def submit():
 @main_blueprint.route("/subs/create", methods=["GET", "POST"])
 @login_required
 def create_sub():
+    """Route for showing both a sub creation form and handling its POST."""
     form = CreateSubForm()
 
     if form.validate_on_submit():

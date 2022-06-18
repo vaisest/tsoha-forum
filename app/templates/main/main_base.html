@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/nav.html' import render_nav_item %}
+
+{% block title %}Tsohit{% endblock %}
+
+{% block content %}
+<div>
+    <nav class="navbar navbar-dark navbar-expand-lg bg-secondary py-0">
+        <div class="container-fluid p-0" style="padding-left: 12px !important; padding-right: 12px !important;">
+            <p class="my-auto p-0 m-0"><small>Subtsohits:</small></p>
+            <div class="navbar-nav me-auto mb-lg-0">
+                {% for other_sub in subs %}
+                <!-- taken from bootstrap-flask source because it doesn't allow you to change styles on navs -->
+                {% set active = True if request.endpoint and request.endpoint == endpoint else False %}
+                <a class="nav-item nav-link m-0 p-0 my-auto ms-1 {% if active %} active" aria-current="page{% endif %}"
+                    href="{{ url_for('main.sub_index', sub_name=other_sub.name) }}">
+                    <small>{{ other_sub.name }}</small>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </nav>
+    {% block main_content %}{% endblock %}
+</div>
+{% endblock %}

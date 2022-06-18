@@ -1,0 +1,21 @@
+{% extends "main/main_base.html" %}
+{% block main_content %}
+<div class="container mt-3">
+    <h1>{% if sub %} {{ sub.title }} {% else %}Tsohit{% endif %}</h1>
+    <div class="d-flex">
+        <div class="border bg-secondary px-2 pt-1 rounded mw-75 mb-2">
+            <a class="text-primary mb-0" style="text-decoration: none;">{{ post.title }}</a>
+            <p class="mb-0">
+                <small>
+                    submitted by {{ post.username }} {{ post.relative_date }}
+                    {% if not sub %} to
+                    <a href="{{ url_for('main.sub_index', sub_name=post.sub_name) }}" class="text-primary">/t/{{
+                        post.sub_name }}</a>
+                    {% endif %}
+                </small>
+            </p>
+            <p class="mb-1">{{post.body}}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

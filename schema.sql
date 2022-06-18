@@ -28,14 +28,14 @@ CREATE TABLE posts (
 
 -- comments are a tree
 -- definitely inefficient, but it probably doesn't matter now
--- CREATE TABLE comments (
---   comment_id SERIAL PRIMARY KEY,
---   author_id INTEGER REFERENCES accounts (account_id) NOT NULL,
---   parent_id INTEGER REFERENCES comments (comment_id),
---   post_id INTEGER REFERENCES posts (post_id) NOT NULL,
---   creation_date TIMESTAMP NOT NULL DEFAULT (NOW() AT TIME ZONE 'utc'),
---   body TEXT NOT NULL
--- );
+CREATE TABLE comments (
+  comment_id SERIAL PRIMARY KEY,
+  author_id INTEGER REFERENCES accounts (account_id) NOT NULL,
+  parent_id INTEGER REFERENCES comments (comment_id),
+  post_id INTEGER REFERENCES posts (post_id) NOT NULL,
+  creation_date TIMESTAMP NOT NULL DEFAULT (NOW() AT TIME ZONE 'utc'),
+  body TEXT NOT NULL
+);
 
 -- CREATE TABLE votes (
 --   id SERIAL PRIMARY KEY,
