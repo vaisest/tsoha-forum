@@ -11,7 +11,7 @@ class SubmitPostForm(FlaskForm):
     """
 
     title = StringField("Title", validators=[DataRequired(), Length(max=300)])
-    body = TextAreaField("Body", validators=[DataRequired()])
+    body = TextAreaField("Body", validators=[DataRequired(), Length(max=5000)])
     sub = SelectField("Subtsohit", validators=[DataRequired()])
 
 
@@ -34,3 +34,13 @@ class CreateSubForm(FlaskForm):
         ],
     )
     title = StringField("Title", validators=[DataRequired(), Length(min=3, max=60)])
+
+
+class CommentForm(FlaskForm):
+    """
+    Flask-WTF form for a new comment.
+    Has only a text field for the comment body that is shown
+    below a post.
+    """
+
+    body = TextAreaField("Comment", validators=[DataRequired(), Length(max=5000)])

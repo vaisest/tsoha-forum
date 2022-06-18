@@ -2,7 +2,7 @@ from flask import Blueprint, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
 
 from .. import db_service
-from ..main.forms import CreateSubForm, SubmitPostForm
+from ..main.forms import CommentForm, CreateSubForm, SubmitPostForm
 
 main_blueprint = Blueprint("main", __name__)
 
@@ -33,18 +33,33 @@ def sub_index(sub_name):
     return render_template("main/index.html", posts=posts, sub=sub, subs=subs)
 
 
-@main_blueprint.route("/t/<sub_name>/<post_id>")
+@main_blueprint.route("/t/<sub_name>/<post_id>", methods=["POST", "GET"])
 def single_post(sub_name, post_id):
     """Route for single post view. Shows post and its comments."""
-    post = db_service.get_post_and_comments_by_id(post_id)
+
+    post, comments = db_service.get_post_and_comments_by_id(post_id)
     subs = db_service.get_subs()
     sub = next(sub for sub in subs if sub.name == sub_name)
+
+    form = CommentForm()
 
     if not sub:
         flash("Subtsohit does not exist", "error")
         return redirect(url_for("main.index"))
 
-    return render_template("main/post.html", post=post, sub=sub, subs=subs)
+    if not post:
+        flash("Post does not exist", "error")
+        return redirect(url_for("main.sub_index", sub_name=sub_name))
+
+    if form.validate_on_submit():
+        body = form.body.data
+
+        db_service.insert_comment(body, post.id, current_user.id)
+        return redirect(url_for("main.single_post", sub_name=sub_name, post_id=post_id))
+
+    return render_template(
+        "main/post.html", form=form, post=post, comments=comments, sub=sub, subs=subs
+    )
 
 
 @main_blueprint.route("/submit", methods=["GET", "POST"])

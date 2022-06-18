@@ -19,7 +19,7 @@ from .util import relative_date_format
 class Post:
     """Dataclass that represents a Tsohit post."""
 
-    id: str
+    id: int
     title: str
     body: str
     username: str
@@ -58,8 +58,10 @@ def get_posts(for_sub=None):
 class Comment:
     """Dataclass that represents a comment."""
 
+    id: int
+    parent_id: int
     body: str
-    username: str
+    author: str
     creation_date: datetime
     relative_date: str
 
@@ -70,18 +72,60 @@ def get_post_and_comments_by_id(post_id):
     post_id. Returns it as a Post instance.
     """
 
-    sql = text(
+    post_sql = text(
         """
         SELECT post_id, title, body, username, creation_date FROM posts
             JOIN accounts ON posts.author_id = accounts.account_id
             WHERE posts.post_id = :post_id
         """
     )
-    res = db.session.execute(sql, {"post_id": post_id}).first()
+    post_res = db.session.execute(post_sql, {"post_id": post_id}).first()
 
-    post = Post(res[0], res[1], res[2], res[3], res[4], relative_date_format(res[4]))
+    post = Post(
+        post_res[0],
+        post_res[1],
+        post_res[2],
+        post_res[3],
+        post_res[4],
+        relative_date_format(post_res[4]),
+    )
 
-    return post
+    comment_sql = text(
+        """
+        SELECT c.comment_id, c.parent_id, c.body, a.username, c.creation_date FROM comments c
+            JOIN accounts a ON c.author_id = a.account_id
+            JOIN posts ON c.post_id = posts.post_id
+            WHERE posts.post_id = :post_id
+        """
+    )
+    comment_res = db.session.execute(comment_sql, {"post_id": post_id}).all()
+    print(post_res, comment_res)
+    comments = [
+        Comment(item[0], item[1], item[2], item[3], item[4], relative_date_format(item[4]))
+        for item in comment_res
+    ]
+
+    return post, comments
+
+
+def insert_comment(body, post_id, author_id):
+    """
+    Inserts comment into database, based on arguments body, post_id, and author_id.
+    Returns the id of the inserted post.
+    """
+
+    sql = text(
+        """
+            INSERT INTO comments (body, post_id, author_id)
+                VALUES (:body, :post_id, :author_id)
+                RETURNING comment_id
+            """
+    )
+    res = db.session.execute(sql, {"body": body, "post_id": post_id, "author_id": author_id})
+    new_id = res.first()[0]
+    db.session.commit()
+
+    return new_id
 
 
 def insert_post(title, body, author_id, sub_id):
