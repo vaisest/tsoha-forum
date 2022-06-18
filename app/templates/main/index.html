@@ -4,24 +4,23 @@
     <h1>{% if sub %} {{ sub.title }} {% else %}Tsohit{% endif %}</h1>
     {% for post in posts %}
     <div class="d-flex">
-        <div class="px-2 pt-1 rounded mw-75 mb-2" style="width: 75%; background-color: rgb(60, 60, 60);">
+        <div class="px-2 py-1 rounded mw-75 mb-2"
+            style="width: 75%; background-color: rgb(60, 60, 60); line-height: normal;">
             {% set comments_href = url_for('main.single_post', sub_name=post.sub_name, post_id=post.id) %}
-            <a class="mb-0 h5" style="text-decoration: none; color: whitesmoke;" href="{{ comments_href }}">{{
-                post.title }}</a>
-            <p class="my-0" style="color: gray;">
-                <small>
-                    submitted by {{ post.username }} {{ post.relative_date }}
-                    {% if not sub %} to
-                    <a href="{{ url_for('main.sub_index', sub_name=post.sub_name) }}"
-                        style="color: rgb(102, 150, 173); text-decoration: none;    ">/t/{{
-                        post.sub_name }}</a>
-                    {% endif %}
-                </small>
+            <a class="mb-1" style="text-decoration: none; color: whitesmoke; font-size: 18px; line-height: 0.1"
+                href="{{ comments_href }}">
+                {{ post.title }}
+            </a>
+            <p class="my-0" style="color: gray; font-size: 12px;">
+                submitted by {{ post.username }} {{ post.relative_date }}
+                {% if not sub %} to
+                <a href="{{ url_for('main.sub_index', sub_name=post.sub_name) }}"
+                    style="color: rgb(102, 150, 173); text-decoration: none;">/t/{{
+                    post.sub_name }}</a>
+                {% endif %}
             </p>
-            <p class="my-0">
-                <strong><a href="{{ comments_href }}" style="color: gray; text-decoration: none;">0
-                        comments</a></strong>
-            </p>
+            <a href="{{ comments_href }}" style="color: gray; text-decoration: none; font-size: 12px;"><strong>
+                    0 comments</strong></a>
         </div>
     </div>
     {% endfor %}
