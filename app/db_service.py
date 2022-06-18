@@ -26,6 +26,7 @@ class Post:
     creation_date: datetime
     relative_date: str
     sub_name: str = None
+    comment_count: int = None
 
 
 def get_posts(for_sub=None):
@@ -36,17 +37,28 @@ def get_posts(for_sub=None):
 
     sql = text(
         """
-        SELECT post_id, title, body, username, creation_date, sub_name FROM posts
-            JOIN accounts ON posts.author_id = accounts.account_id
-            JOIN subtsohits ON posts.parent_sub_id = subtsohits.sub_id
-                AND (:for_sub IS NULL OR subtsohits.sub_name = :for_sub)
+        SELECT p.post_id, p.title, p.body, a.username, p.creation_date, s.sub_name, COUNT(c) AS comment_count
+        FROM posts AS p
+        JOIN accounts a ON p.author_id = a.account_id
+        JOIN subtsohits s ON p.parent_sub_id = s.sub_id
+            AND (:for_sub IS NULL OR s.sub_name = :for_sub)
+        LEFT JOIN comments c ON c.post_id = p.post_id
+        GROUP BY p.post_id, p.title, p.body, a.username, p.creation_date, s.sub_name;
         """
     )
+
     res = db.session.execute(sql, {"for_sub": for_sub}).all()
 
     posts = [
         Post(
-            item[0], item[1], item[2], item[3], item[4], relative_date_format(item[4]), item[5]
+            item[0],
+            item[1],
+            item[2],
+            item[3],
+            item[4],
+            relative_date_format(item[4]),
+            item[5],
+            comment_count=item[6],
         )
         for item in res
     ]
@@ -74,9 +86,12 @@ def get_post_and_comments_by_id(post_id):
 
     post_sql = text(
         """
-        SELECT post_id, title, body, username, creation_date FROM posts
-            JOIN accounts ON posts.author_id = accounts.account_id
-            WHERE posts.post_id = :post_id
+        SELECT p.post_id, p.title, p.body, a.username, p.creation_date, COUNT(c) AS comment_count
+            FROM posts AS p
+            LEFT JOIN comments c ON c.post_id = p.post_id
+            JOIN accounts a ON p.author_id = a.account_id
+                WHERE p.post_id = :post_id
+            GROUP BY p.post_id, p.title, p.body, a.username, p.creation_date
         """
     )
     post_res = db.session.execute(post_sql, {"post_id": post_id}).first()
@@ -88,6 +103,7 @@ def get_post_and_comments_by_id(post_id):
         post_res[3],
         post_res[4],
         relative_date_format(post_res[4]),
+        comment_count=post_res[5],
     )
 
     comment_sql = text(
@@ -99,7 +115,6 @@ def get_post_and_comments_by_id(post_id):
         """
     )
     comment_res = db.session.execute(comment_sql, {"post_id": post_id}).all()
-    print(post_res, comment_res)
     comments = [
         Comment(item[0], item[1], item[2], item[3], item[4], relative_date_format(item[4]))
         for item in comment_res

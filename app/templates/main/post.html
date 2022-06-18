@@ -2,8 +2,8 @@
 {% from 'bootstrap5/form.html' import render_field %}
 
 {% block main_content %}
-<div class="container mt-3">
-    <h1>{% if sub %} {{ sub.title }} {% else %}Tsohit{% endif %}</h1>
+<div class="container mt-2">
+    <h3>{% if sub %} {{ sub.title }} {% else %}Tsohit{% endif %}</h3>
     <div class="d-flex">
         <div class="px-2 pt-1 rounded mw-75 mb-2" style="width: 75%; background-color: rgb(50, 50, 50);">
             <a class=" mb-0" style="text-decoration: none; color: whitesmoke; font-size: 18px; line-height: 0.1"
@@ -21,7 +21,7 @@
             <p class="mb-1 border rounded p-1 mt-1" style="border-color: rgb(100, 100, 100) !important;">{{post.body}}
             </p>
             <a href="{{ comments_href }}" style="color: gray; text-decoration: none; font-size: 12px;"><strong>
-                    0 comments</strong></a>
+                    {{post.comment_count}} comments</strong></a>
         </div>
     </div>
     <div class="mw-50">
