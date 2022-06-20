@@ -31,7 +31,7 @@
             </div>
             <div class="d-flex align-items-center">
                 {% if current_user.is_authenticated %}
-                <a class="text-light" href="logout">Logout</a>
+                <a class="text-light" href="/logout">Logout</a>
                 {% else %}
                 <a class="text-light me-3" href="/login">Login</a>
                 <a class="btn btn-outline-success" href="/register">Register</a>

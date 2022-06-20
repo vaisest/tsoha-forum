@@ -52,6 +52,10 @@ def single_post(sub_name, post_id):
         return redirect(url_for("main.sub_index", sub_name=sub_name))
 
     if form.validate_on_submit():
+        if not current_user.is_authenticated:
+            flash("You are not logged in", "error")
+            return redirect(url_for("main.single_post", sub_name=sub_name, post_id=post_id))
+
         body = form.body.data
 
         db_service.insert_comment(body, post.id, current_user.id)
