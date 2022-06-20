@@ -31,7 +31,11 @@ FLASK_ENV=development flask run # debug versio
 Tiedostossa `requirements/dev.txt` on muutamia tämän sovelluksen kehittämiseen käytettyjä työkaluja. Kaikki projektin koodi on formatoitu Black-työkalulla, mitä voidaan käyttää komennolla `black --line-length 95 app`.  
 Lisätarkastukseen voidaan käyttä Flake8-komentoa seuraavasti: `flake8 --max-line-length 95 app`.
 
-## Sovelluksen toimintoja
+## Sovelluksen nykyinen tila
+
+Sovellus on testattavissa herokussa osoitteessa [tsohit.herokuapp.com](https://tsohit.herokuapp.com). Lopullisista toiminnoista puuttuu vielä kommenttien kommentointi, ylläpitäjän toiminnot, kommenttien poistaminen, käyttäjäsivut, ja äänestys.
+
+## Sovelluksen toivottavasti lopulliset toiminnot
 
 - Käyttäjiä voi lisätä ja sovelluksessa on tavallinen kirjautumistoiminto. Ylläpitällä on oma käyttäjä, jolla on erikoisoikeuksia.
 
