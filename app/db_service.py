@@ -47,8 +47,7 @@ def get_posts(for_sub=None, current_user_id=None):
             (SELECT vote_value
                 FROM votes tv
                 WHERE
-                    (:acc_id IS NULL OR tv.account_id = :acc_id)
-                    AND p.post_id = tv.post_id
+                    tv.account_id = :acc_id AND p.post_id = tv.post_id)
             AS liked_by_account
         FROM posts AS p
         JOIN accounts a ON p.author_id = a.account_id
@@ -61,7 +60,6 @@ def get_posts(for_sub=None, current_user_id=None):
         ORDER BY p.creation_date DESC;
         """
     )
-
     res = db.session.execute(sql, {"for_sub": for_sub, "acc_id": current_user_id}).all()
     posts = [
         Post(
@@ -210,7 +208,6 @@ def insert_post_vote(account_id, post_id, value):
         if isinstance(e.orig, ForeignKeyViolation):
             return False
         else:
-            print("asd")
             raise e
 
 
