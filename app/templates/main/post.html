@@ -3,7 +3,10 @@
 
 {% block main_content %}
 <div class="container mt-2">
-    <h3>{% if sub %} {{ sub.title }} {% else %}Tsohit{% endif %}</h3>
+    <h3><a href="{{ url_for('main.sub_index', sub_name=sub.name) }}" style="text-decoration: none; color: whitesmoke;">
+            {% if sub %} {{ sub.name }} - {{ sub.title }} {% else %}Tsohit{% endif %}
+        </a>
+    </h3>
     <div class="d-flex">
         <div class="px-2 pt-1 rounded mw-75 mb-2" style="width: 75%; background-color: rgb(50, 50, 50);">
             <a class=" mb-0" style="text-decoration: none; color: whitesmoke; font-size: 18px; line-height: 0.1"

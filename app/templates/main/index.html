@@ -1,7 +1,7 @@
 {% extends "main/main_base.html" %}
 {% block main_content %}
 <div class="container mt-2">
-    <h3>{% if sub %} {{ sub.title }} {% else %}Tsohit{% endif %}</h3>
+    <h3>{% if sub %} {{ sub.name }} - {{ sub.title }} {% else %}Tsohit{% endif %}</h3>
     {% for post in posts %}
     <div class="d-flex">
         <div class="px-2 py-1 rounded mw-75 mb-2"

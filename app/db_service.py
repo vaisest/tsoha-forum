@@ -39,11 +39,13 @@ def get_posts(for_sub=None):
         """
         SELECT p.post_id, p.title, p.body, a.username, p.creation_date, s.sub_name, COUNT(c) AS comment_count
         FROM posts AS p
+        WHERE p.deleted
         JOIN accounts a ON p.author_id = a.account_id
         JOIN subtsohits s ON p.parent_sub_id = s.sub_id
             AND (:for_sub IS NULL OR s.sub_name = :for_sub)
         LEFT JOIN comments c ON c.post_id = p.post_id
-        GROUP BY p.post_id, p.title, p.body, a.username, p.creation_date, s.sub_name;
+        GROUP BY p.post_id, p.title, p.body, a.username, p.creation_date, s.sub_name
+        ORDER BY p.creation_date DESC;
         """
     )
 
@@ -95,6 +97,9 @@ def get_post_and_comments_by_id(post_id):
         """
     )
     post_res = db.session.execute(post_sql, {"post_id": post_id}).first()
+
+    if not post_res:
+        return None, None
 
     post = Post(
         post_res[0],
