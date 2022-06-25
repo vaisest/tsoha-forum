@@ -10,7 +10,8 @@ main_blueprint = Blueprint("main", __name__)
 @main_blueprint.route("/")
 def index():
     """Route for main view with posts from all subs."""
-    posts = db_service.get_posts(current_user_id=current_user.id)
+    user_id = current_user.id if current_user.is_authenticated else None
+    posts = db_service.get_posts(current_user_id=user_id)
     subs = db_service.get_subs()
     # print(f"{posts=}")
 
