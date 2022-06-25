@@ -12,7 +12,7 @@ def index():
     """Route for main view with posts from all subs."""
     posts = db_service.get_posts()
     subs = db_service.get_subs()
-    print(f"{posts=}")
+    # print(f"{posts=}")
 
     return render_template("main/index.html", posts=posts, subs=subs)
 
@@ -28,7 +28,7 @@ def sub_index(sub_name):
         flash("Subtsohit does not exist", "error")
         return redirect(url_for("main.index"))
 
-    print(f"{posts=} in {sub=}")
+    # print(f"{posts=} in {sub=}")
 
     return render_template("main/index.html", posts=posts, sub=sub, subs=subs)
 
@@ -103,3 +103,19 @@ def create_sub():
 
         return redirect(url_for("main.sub_index", sub_name=name))
     return render_template("main/create_sub.html", form=form)
+
+
+@main_blueprint.get("/vote_post/<int:post_id>/<action>")
+@login_required
+def vote_post(post_id, action):
+    if action not in ("upvote", "downvote"):
+        flash("Vote action invalid", "error")
+        return redirect(url_for("main.index"))
+
+    value = 1 if action == "upvote" else -1
+
+    if not db_service.insert_post_vote(current_user.id, post_id, value):
+        flash("Vote failed. Post_id is incorrect.", "error")
+        return redirect(url_for("main.index"))
+
+    return redirect(url_for("main.index"))

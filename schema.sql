@@ -23,7 +23,8 @@ CREATE TABLE posts (
   parent_sub_id INTEGER REFERENCES subtsohits (sub_id) NOT NULL,
   creation_date TIMESTAMP NOT NULL DEFAULT (NOW() AT TIME ZONE 'utc'),
   title VARCHAR(300) NOT NULL,
-  body TEXT NOT NULL
+  body TEXT NOT NULL,
+  deleted BOOLEAN NOT NULL DEFAULT FALSE,
 );
 
 -- comments are a tree
@@ -37,9 +38,12 @@ CREATE TABLE comments (
   body TEXT NOT NULL
 );
 
--- CREATE TABLE votes (
---   id SERIAL PRIMARY KEY,
---   post_id INTEGER REFERENCES posts (post_id),
---   comment_id INTEGER REFERENCES comments (comment_id),
---   vote_value INTEGER NOT NULL CHECK (vote_value IN (1, -1))  -- 1 or -1
--- );
+CREATE TABLE votes (
+  id SERIAL PRIMARY KEY,
+  account_id INTEGER NOT NULL REFERENCES accounts (account_id),
+  post_id INTEGER REFERENCES posts (post_id),
+  comment_id INTEGER REFERENCES comments (comment_id),
+  UNIQUE (account_id, post_id),
+  UNIQUE (account_id, comment_id),
+  vote_value INTEGER NOT NULL CHECK (vote_value IN (1, -1))  -- 1 or -1
+);

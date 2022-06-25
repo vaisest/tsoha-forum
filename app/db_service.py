@@ -8,7 +8,9 @@ but as a TODO it could be split into several smaller services.
 from dataclasses import dataclass
 from datetime import datetime
 
+from psycopg2.errors import ForeignKeyViolation
 from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
 
 from . import db
 from .auth.manager import User
@@ -27,9 +29,11 @@ class Post:
     relative_date: str
     sub_name: str = None
     comment_count: int = None
+    voted_by_user: bool = None
+    score: int = 0
 
 
-def get_posts(for_sub=None):
+def get_posts(for_sub=None, current_user_id=None):
     """
     Gets all posts from DB, or only for a specific sub if kwarg for_sub is defined.
     Returns data as Post instances.
@@ -37,20 +41,28 @@ def get_posts(for_sub=None):
 
     sql = text(
         """
-        SELECT p.post_id, p.title, p.body, a.username, p.creation_date, s.sub_name, COUNT(c) AS comment_count
+        SELECT p.post_id, p.title, p.body, a.username, p.creation_date, s.sub_name,
+            COUNT(c) AS comment_count,
+            GREATEST(SUM(v.vote_value), 0) AS vote_sum,
+            (SELECT vote_value
+                FROM votes tv
+                WHERE
+                    ((:acc_id IS NULL OR tv.account_id = :acc_id))
+                    AND (p.post_id = tv.post_id))
+            AS liked_by_account
         FROM posts AS p
-        WHERE p.deleted
         JOIN accounts a ON p.author_id = a.account_id
         JOIN subtsohits s ON p.parent_sub_id = s.sub_id
             AND (:for_sub IS NULL OR s.sub_name = :for_sub)
         LEFT JOIN comments c ON c.post_id = p.post_id
+        LEFT JOIN votes v ON v.post_id = p.post_id 
+        WHERE p.deleted = 'f'
         GROUP BY p.post_id, p.title, p.body, a.username, p.creation_date, s.sub_name
         ORDER BY p.creation_date DESC;
         """
     )
 
-    res = db.session.execute(sql, {"for_sub": for_sub}).all()
-
+    res = db.session.execute(sql, {"for_sub": for_sub, "acc_id": current_user_id}).all()
     posts = [
         Post(
             item[0],
@@ -61,6 +73,8 @@ def get_posts(for_sub=None):
             relative_date_format(item[4]),
             item[5],
             comment_count=item[6],
+            voted_by_user=item[8],
+            score=item[7],
         )
         for item in res
     ]
@@ -167,7 +181,37 @@ def insert_post(title, body, author_id, sub_id):
     new_id = res.first()[0]
     db.session.commit()
 
+    insert_post_vote(author_id, new_id, 1)
+
     return new_id
+
+
+def insert_post_vote(account_id, post_id, value):
+    """
+    Inserts a new vote into DB, based on author_id, post_id, and value.
+    If the vote exists, the value is updated.
+    Returns False on failure, and True on success.
+    """
+    sql = text(
+        """
+            INSERT INTO votes (account_id, post_id, vote_value)
+                VALUES (:account_id, :post_id, :value)
+                ON CONFLICT
+                    ON CONSTRAINT votes_account_id_post_id_key
+                DO
+                    UPDATE SET vote_value = :value;
+        """
+    )
+    try:
+        db.session.execute(sql, {"account_id": account_id, "post_id": post_id, "value": value})
+        db.session.commit()
+        return True
+    except IntegrityError as e:
+        if isinstance(e.orig, ForeignKeyViolation):
+            return False
+        else:
+            print("asd")
+            raise e
 
 
 @dataclass

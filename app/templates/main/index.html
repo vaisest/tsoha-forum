@@ -4,6 +4,19 @@
     <h3>{% if sub %} {{ sub.name }} - {{ sub.title }} {% else %}Tsohit{% endif %}</h3>
     {% for post in posts %}
     <div class="d-flex">
+        <div class="me-2 justify-content-center d-flex flex-column align-items-center pb-2">
+            <svg style="display: block;" viewBox="0 0 32 16" width="22px">
+                <a href="{{ url_for('main.vote_post', post_id=post.id, action='upvote') }}">
+                    <path d="M0 16H32L16 0Z" fill="{{ 'orange' if post.voted_by_user == 1 else 'gray'}}"></path>
+                </a>
+            </svg>
+            <div class="" style="display: table;">{{ post.score }}</div>
+            <svg style="display: block;" viewBox="0 0 32 16" width="22px">
+                <a href="{{ url_for('main.vote_post', post_id=post.id, action='downvote') }}">
+                    <path d="M0 0H32L16 16Z" fill="{{ 'lightblue' if post.voted_by_user == -1 else 'gray'}}"></path>
+                </a>
+            </svg>
+        </div>
         <div class="px-2 py-1 rounded mw-75 mb-2"
             style="width: 75%; background-color: rgb(60, 60, 60); line-height: normal;">
             {% set comments_href = url_for('main.single_post', sub_name=post.sub_name, post_id=post.id) %}
