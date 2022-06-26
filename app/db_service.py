@@ -42,8 +42,8 @@ def get_posts(for_sub=None, current_user_id=None):
     sql = text(
         """
         SELECT p.post_id, p.title, p.body, a.username, p.creation_date, s.sub_name,
-            COUNT(c) AS comment_count,
-            GREATEST(SUM(v.vote_value), 0) AS vote_sum,
+            cc.comment_count,
+            vs.vote_sum,
             (SELECT vote_value
                 FROM votes tv
                 WHERE
@@ -53,10 +53,17 @@ def get_posts(for_sub=None, current_user_id=None):
         JOIN accounts a ON p.author_id = a.account_id
         JOIN subtsohits s ON p.parent_sub_id = s.sub_id
             AND (:for_sub IS NULL OR s.sub_name = :for_sub)
-        LEFT JOIN comments c ON c.post_id = p.post_id
-        LEFT JOIN votes v ON v.post_id = p.post_id 
+        JOIN (SELECT p.post_id, COUNT(c) AS comment_count
+                FROM posts p
+                LEFT JOIN comments c ON c.post_id = p.post_id
+                GROUP BY p.post_id) cc
+                    ON p.post_id = cc.post_id
+        JOIN (SELECT p.post_id, GREATEST(SUM(v.vote_value), 0) AS vote_sum
+                FROM posts p
+                LEFT JOIN votes v ON p.post_id = v.post_id
+                GROUP BY p.post_id) vs
+                    ON p.post_id = vs.post_id
         WHERE p.deleted = 'f'
-        GROUP BY p.post_id, p.title, p.body, a.username, p.creation_date, s.sub_name
         ORDER BY p.creation_date DESC;
         """
     )
