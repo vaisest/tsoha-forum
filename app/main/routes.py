@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, redirect, render_template, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from .. import db_service
@@ -21,7 +21,8 @@ def index():
 @main_blueprint.route("/t/<sub_name>/")
 def sub_index(sub_name):
     """Route for sub view where only posts from specificed sub are shown."""
-    posts = db_service.get_posts(for_sub=sub_name)
+    user_id = current_user.id if current_user.is_authenticated else None
+    posts = db_service.get_posts(current_user_id=user_id, for_sub=sub_name)
     subs = db_service.get_subs()
     sub = next(sub for sub in subs if sub.name == sub_name)
 
@@ -38,7 +39,8 @@ def sub_index(sub_name):
 def single_post(sub_name, post_id):
     """Route for single post view. Shows post and its comments."""
 
-    post, comments = db_service.get_post_and_comments_by_id(post_id)
+    user_id = current_user.id if current_user.is_authenticated else None
+    post, comments = db_service.get_post_and_comments_by_id(post_id, current_user_id=user_id)
     subs = db_service.get_subs()
     sub = next(sub for sub in subs if sub.name == sub_name)
 
@@ -109,7 +111,7 @@ def create_sub():
 @main_blueprint.get("/vote_post/<int:post_id>/<action>")
 @login_required
 def vote_post(post_id, action):
-    if action not in ("upvote", "downvote"):
+    if action and action not in ("upvote", "downvote"):
         flash("Vote action invalid", "error")
         return redirect(url_for("main.index"))
 
@@ -119,4 +121,12 @@ def vote_post(post_id, action):
         flash("Vote failed. Post_id is incorrect.", "error")
         return redirect(url_for("main.index"))
 
-    return redirect(url_for("main.index"))
+    return redirect(request.referrer)
+
+
+@main_blueprint.get("/unvote_post/<int:post_id>")
+@login_required
+def unvote_post(post_id):
+    db_service.delete_post_vote(current_user.id, post_id)
+
+    return redirect(request.referrer)

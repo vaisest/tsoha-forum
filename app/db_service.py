@@ -29,7 +29,7 @@ class Post:
     relative_date: str
     sub_name: str = None
     comment_count: int = None
-    voted_by_user: bool = None
+    user_vote: bool = None
     score: int = 0
 
 
@@ -78,7 +78,7 @@ def get_posts(for_sub=None, current_user_id=None):
             relative_date_format(item[4]),
             item[5],
             comment_count=item[6],
-            voted_by_user=item[8],
+            user_vote=item[8],
             score=item[7],
         )
         for item in res
@@ -99,7 +99,7 @@ class Comment:
     relative_date: str
 
 
-def get_post_and_comments_by_id(post_id):
+def get_post_and_comments_by_id(post_id, current_user_id=None):
     """
     Gets a single post from the database based on a
     post_id. Returns it as a Post instance.
@@ -107,15 +107,31 @@ def get_post_and_comments_by_id(post_id):
 
     post_sql = text(
         """
-        SELECT p.post_id, p.title, p.body, a.username, p.creation_date, COUNT(c) AS comment_count
-            FROM posts AS p
-            LEFT JOIN comments c ON c.post_id = p.post_id
-            JOIN accounts a ON p.author_id = a.account_id
-                WHERE p.post_id = :post_id
-            GROUP BY p.post_id, p.title, p.body, a.username, p.creation_date
+        SELECT p.post_id, p.title, p.body, a.username, p.creation_date, cc.comment_count, vs.vote_sum,
+            (SELECT vote_value
+                FROM votes tv
+                WHERE
+                    tv.account_id = :acc_id AND p.post_id = tv.post_id)
+            AS liked_by_account
+        FROM posts AS p
+        JOIN accounts a ON p.author_id = a.account_id
+        JOIN (SELECT p.post_id, COUNT(c) AS comment_count
+                FROM posts p
+                LEFT JOIN comments c ON c.post_id = p.post_id
+                GROUP BY p.post_id) cc
+                    ON p.post_id = cc.post_id
+        JOIN (SELECT p.post_id, GREATEST(SUM(v.vote_value), 0) AS vote_sum
+                FROM posts p
+                LEFT JOIN votes v ON p.post_id = v.post_id
+                GROUP BY p.post_id) vs
+                    ON p.post_id = vs.post_id
+        WHERE p.post_id = :post_id
+        ORDER BY p.creation_date DESC;
         """
     )
-    post_res = db.session.execute(post_sql, {"post_id": post_id}).first()
+    post_res = db.session.execute(
+        post_sql, {"post_id": post_id, "acc_id": current_user_id}
+    ).first()
 
     if not post_res:
         return None, None
@@ -128,6 +144,8 @@ def get_post_and_comments_by_id(post_id):
         post_res[4],
         relative_date_format(post_res[4]),
         comment_count=post_res[5],
+        score=post_res[6],
+        user_vote=post_res[7],
     )
 
     comment_sql = text(
@@ -216,6 +234,22 @@ def insert_post_vote(account_id, post_id, value):
             return False
         else:
             raise e
+
+
+def delete_post_vote(account_id, post_id):
+    """
+    Removes a vote from the database based on account_id and post_id.
+    """
+
+    sql = text(
+        """
+            DELETE FROM votes
+                WHERE account_id = :account_id
+                    AND post_id = :post_id
+        """
+    )
+    db.session.execute(sql, {"account_id": account_id, "post_id": post_id})
+    db.session.commit()
 
 
 @dataclass

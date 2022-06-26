@@ -8,6 +8,21 @@
         </a>
     </h3>
     <div class="d-flex">
+        <div class="me-2 justify-content-center d-flex flex-column align-items-center pb-2">
+            <svg style="display: block;" viewBox="0 0 32 16" width="22px">
+                <a href="{{ url_for('main.unvote_post', post_id=post.id) if post.user_vote == 1
+                                    else url_for('main.vote_post', post_id=post.id, action='upvote') }}">
+                    <path d="M0 16H32L16 0Z" fill="{{ 'orange' if post.user_vote == 1 else 'gray'}}"></path>
+                </a>
+            </svg>
+            <div class="" style="display: table;">{{ post.score }}</div>
+            <svg style="display: block;" viewBox="0 0 32 16" width="22px">
+                <a href="{{ url_for('main.unvote_post', post_id=post.id) if post.user_vote == -1
+                                    else url_for('main.vote_post', post_id=post.id, action='downvote') }}">
+                    <path d="M0 0H32L16 16Z" fill="{{ 'lightblue' if post.user_vote == -1 else 'gray'}}"></path>
+                </a>
+            </svg>
+        </div>
         <div class="px-2 pt-1 rounded mw-75 mb-2" style="width: 75%; background-color: rgb(50, 50, 50);">
             <a class=" mb-0" style="text-decoration: none; color: whitesmoke; font-size: 18px; line-height: 0.1"
                 href="{{ comments_href }}">
