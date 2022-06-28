@@ -111,14 +111,32 @@ def create_sub():
 @main_blueprint.get("/vote_post/<int:post_id>/<action>")
 @login_required
 def vote_post(post_id, action):
+    "Route for voting posts."
     if action and action not in ("upvote", "downvote"):
         flash("Vote action invalid", "error")
         return redirect(url_for("main.index"))
 
     value = 1 if action == "upvote" else -1
 
-    if not db_service.insert_post_vote(current_user.id, post_id, value):
+    if not db_service.insert_vote(current_user.id, value, post_id=post_id):
         flash("Vote failed. Post_id is incorrect.", "error")
+        return redirect(url_for("main.index"))
+
+    return redirect(request.referrer)
+
+
+@main_blueprint.get("/vote_comment/<int:comment_id>/<action>")
+@login_required
+def vote_comment(comment_id, action):
+    "Route for voting comments."
+    if action and action not in ("upvote", "downvote"):
+        flash("Vote action invalid", "error")
+        return redirect(url_for("main.index"))
+
+    value = 1 if action == "upvote" else -1
+
+    if not db_service.insert_vote(current_user.id, value, comment_id=comment_id):
+        flash("Vote failed. Comment_id is incorrect.", "error")
         return redirect(url_for("main.index"))
 
     return redirect(request.referrer)
@@ -127,6 +145,16 @@ def vote_post(post_id, action):
 @main_blueprint.get("/unvote_post/<int:post_id>")
 @login_required
 def unvote_post(post_id):
-    db_service.delete_post_vote(current_user.id, post_id)
+    "Route to unvote a post."
+    db_service.delete_post_vote(current_user.id, post_id=post_id)
+
+    return redirect(request.referrer)
+
+
+@main_blueprint.get("/unvote_comment/<int:comment_id>")
+@login_required
+def unvote_comment(comment_id):
+    "Route to unvote a comment."
+    db_service.delete_vote(current_user.id, comment_id=comment_id)
 
     return redirect(request.referrer)

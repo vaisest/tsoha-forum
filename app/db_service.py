@@ -97,6 +97,8 @@ class Comment:
     author: str
     creation_date: datetime
     relative_date: str
+    score: int
+    user_vote: int
 
 
 def get_post_and_comments_by_id(post_id, current_user_id=None):
@@ -150,15 +152,37 @@ def get_post_and_comments_by_id(post_id, current_user_id=None):
 
     comment_sql = text(
         """
-        SELECT c.comment_id, c.parent_id, c.body, a.username, c.creation_date FROM comments c
+        SELECT c.comment_id, c.parent_id, c.body, a.username, c.creation_date, vs.vote_sum AS score, uv.vote_value AS user_vote
+        FROM comments c
             JOIN accounts a ON c.author_id = a.account_id
             JOIN posts ON c.post_id = posts.post_id
-            WHERE posts.post_id = :post_id
+            JOIN (SELECT ct.comment_id, GREATEST(SUM(v.vote_value), 0) AS vote_sum
+                FROM comments ct
+                LEFT JOIN votes v ON ct.comment_id = v.comment_id
+                GROUP BY ct.comment_id) vs
+                    ON c.comment_id = vs.comment_id
+            LEFT JOIN (SELECT tv.comment_id, tv.vote_value
+                    FROM votes tv
+                    WHERE
+                        tv.account_id = :acc_id) uv
+                        ON c.comment_id = uv.comment_id
+            WHERE c.post_id = :post_id;
         """
     )
-    comment_res = db.session.execute(comment_sql, {"post_id": post_id}).all()
+    comment_res = db.session.execute(
+        comment_sql, {"post_id": post_id, "acc_id": current_user_id}
+    ).all()
     comments = [
-        Comment(item[0], item[1], item[2], item[3], item[4], relative_date_format(item[4]))
+        Comment(
+            item[0],
+            item[1],
+            item[2],
+            item[3],
+            item[4],
+            relative_date_format(item[4]),
+            item[5],
+            item[6],
+        )
         for item in comment_res
     ]
 
@@ -182,6 +206,8 @@ def insert_comment(body, post_id, author_id):
     new_id = res.first()[0]
     db.session.commit()
 
+    insert_vote(author_id, 1, comment_id=new_id)
+
     return new_id
 
 
@@ -204,18 +230,19 @@ def insert_post(title, body, author_id, sub_id):
     new_id = res.first()[0]
     db.session.commit()
 
-    insert_post_vote(author_id, new_id, 1)
+    insert_vote(author_id, 1, post_id=new_id)
 
     return new_id
 
 
-def insert_post_vote(account_id, post_id, value):
+def insert_vote(account_id, value, post_id=None, comment_id=None):
     """
     Inserts a new vote into DB, based on author_id, post_id, and value.
     If the vote exists, the value is updated.
     Returns False on failure, and True on success.
     """
-    sql = text(
+
+    post_sql = text(
         """
             INSERT INTO votes (account_id, post_id, vote_value)
                 VALUES (:account_id, :post_id, :value)
@@ -225,8 +252,29 @@ def insert_post_vote(account_id, post_id, value):
                     UPDATE SET vote_value = :value;
         """
     )
+
+    # ON CONFLICT ON CONSTRAINT can't check multiple constraints so need separate query:
+    comment_sql = text(
+        """
+            INSERT INTO votes (account_id, comment_id, vote_value)
+                VALUES (:account_id, :comment_id, :value)
+                ON CONFLICT
+                    ON CONSTRAINT votes_account_id_comment_id_key
+                DO
+                    UPDATE SET vote_value = :value;
+        """
+    )
     try:
-        db.session.execute(sql, {"account_id": account_id, "post_id": post_id, "value": value})
+        if post_id:
+            db.session.execute(
+                post_sql, {"account_id": account_id, "post_id": post_id, "value": value}
+            )
+        elif comment_id:
+            db.session.execute(
+                comment_sql,
+                {"account_id": account_id, "comment_id": comment_id, "value": value},
+            )
+
         db.session.commit()
         return True
     except IntegrityError as e:
@@ -236,7 +284,7 @@ def insert_post_vote(account_id, post_id, value):
             raise e
 
 
-def delete_post_vote(account_id, post_id):
+def delete_vote(account_id, post_id=None, comment_id=None):
     """
     Removes a vote from the database based on account_id and post_id.
     """
@@ -245,10 +293,14 @@ def delete_post_vote(account_id, post_id):
         """
             DELETE FROM votes
                 WHERE account_id = :account_id
-                    AND post_id = :post_id
+                    AND
+                        (post_id = :post_id
+                        OR comment_id = comment_id)
         """
     )
-    db.session.execute(sql, {"account_id": account_id, "post_id": post_id})
+    db.session.execute(
+        sql, {"account_id": account_id, "post_id": post_id, "comment_id": comment_id}
+    )
     db.session.commit()
 
 
