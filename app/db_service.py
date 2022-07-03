@@ -166,7 +166,8 @@ def get_post_and_comments_by_id(post_id, current_user_id=None):
                     WHERE
                         tv.account_id = :acc_id) uv
                         ON c.comment_id = uv.comment_id
-            WHERE c.post_id = :post_id;
+            WHERE c.post_id = :post_id
+        ORDER BY score DESC;
         """
     )
     comment_res = db.session.execute(
@@ -295,7 +296,7 @@ def delete_vote(account_id, post_id=None, comment_id=None):
                 WHERE account_id = :account_id
                     AND
                         (post_id = :post_id
-                        OR comment_id = comment_id)
+                        OR comment_id = :comment_id)
         """
     )
     db.session.execute(

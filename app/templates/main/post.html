@@ -73,7 +73,7 @@
                 <div class="" style="display: table;">{{ comment.score }}</div>
                 <svg style="display: block;" viewBox="0 0 32 16" width="22px">
                     <a
-                        href="{{ url_for('main.unvote_comment', comment_id=post.id) if comment.user_vote == -1
+                        href="{{ url_for('main.unvote_comment', comment_id=comment.id) if comment.user_vote == -1
                                                     else url_for('main.vote_comment', comment_id=comment.id, action='downvote') }}">
                         <path d="M0 0H32L16 16Z" fill="{{ 'lightblue' if comment.user_vote == -1 else 'gray'}}"></path>
                     </a>
