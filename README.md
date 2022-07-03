@@ -33,7 +33,7 @@ Lisätarkastukseen voidaan käyttä Flake8-komentoa seuraavasti: `flake8 --max-l
 
 ## Sovelluksen nykyinen tila
 
-Sovellus on testattavissa herokussa osoitteessa [tsohit.herokuapp.com](https://tsohit.herokuapp.com). Lopullisista toiminnoista puuttuu vielä kommenttien kommentointi, ylläpitäjän toiminnot, kommenttien poistaminen, käyttäjäsivut, ja äänestys.
+Sovellus on testattavissa herokussa osoitteessa [tsohit.herokuapp.com](https://tsohit.herokuapp.com). Lopullisista toiminnoista puuttuu vielä kommenttien kommentointi, ylläpitäjän toiminnot, asioiden poistaminen ja käyttäjäsivut.
 
 ## Sovelluksen toivottavasti lopulliset toiminnot
 
